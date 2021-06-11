@@ -38,11 +38,11 @@ kubectl create -f manifests/deployment.yaml
 Access can be given or revoked by updating a `configmap` called
 `authorized-keys` which contains a `authorized_keys` file.
 
-It is easy to transform an existing `authorized_keys` file into the required
-configmap:
+It is easy to transform an existing `authorized_keys` file or your `id_rsa.pub`
+file into the required configmap:
 
 ```bash
-kubectl create configmap authorized-keys --from-file=example/authorized_keys
+kubectl create configmap authorized-keys --from-file=${HOME}/.ssh/id_rsa.pub
 ```
 
 ### Exposing the service via kubectl port-forward
@@ -56,7 +56,7 @@ kubectl port-forward svc/sshd 2222:22 &
 Connect to the ssh server:
 
 ```bash
-ssh nonroot@localhost -p 2222 -i example/vagrant.key
+ssh nonroot@localhost -p 2222
 ```
 
 With the port-forward established, we can define a jumphost in our `.ssh/config` file:
@@ -66,7 +66,26 @@ Host jumphost
    HostName localhost
    User nonroot
    Port 2222
-   IdentityFile ~/ssh-jumphost/example/vagrant
+```
+
+### Exposing the service via a NodePort
+
+Create the pre-defined nodeport service which will expose sshd on port
+`32222`:
+
+
+```bash
+kubectl create -f manifests/nodeport-service.yaml
+```
+
+Define an entry like this in `.ssh/config`
+
+
+```
+Host jumphost
+   HostName <node-ip>
+   User nonroot
+   Port 32222
 ```
 
 ### Define a headless service to assign nice uniqe DNS names to every VMI in a cluster
