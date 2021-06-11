@@ -22,17 +22,19 @@ spec:
         ports:
         - containerPort: 2222
         volumeMounts:
-          - name: authorized-keys-configmap
+          - name: authorized-keys
             mountPath: "/home/nonroot/authorized_keys_configmap"
+          - name: host-keys
+            mountPath: "/home/nonroot/host_keys_secret"
         command: ["/home/nonroot/entrypoint.sh"]
       volumes:
-        - name: authorized-keys-configmap
+        - name: authorized-keys
           configMap:
             optional: true
             name: authorized-keys
-            items:
-            - key: "authorized_keys"
-              path: "authorized_keys"
+        - name: host-keys
+          secret:
+            secretName: host-keys
 ---
 apiVersion: v1
 kind: Service
