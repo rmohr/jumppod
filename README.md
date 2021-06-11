@@ -14,7 +14,9 @@ Once running and exposed, you have a jump pod inside your kubernetes cluster
 with KubeVirt, including kube-dns resolution.
 
 Ensure that your VMIs which you want to access are part of a headless service
-(https://kubevirt.io/user-guide/virtual_machines/dns/#dns-records).
+(https://kubevirt.io/user-guide/virtual_machines/dns/#dns-records) and you will
+have nice DNS names for your VMs for ansible or yourself without the need for a
+ton of `ClusterIP` services or plain IPs just for administrational tasks.
 
 ## Security considerations
 
