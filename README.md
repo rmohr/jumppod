@@ -1,6 +1,5 @@
 # jumppod
 
-
 ## What does this do?
 
 Suppose you have ansible and you want to provision KubeVirt VMs in a kubernets
@@ -16,6 +15,12 @@ with KubeVirt, including kube-dns resolution.
 
 Ensure that your VMIs which you want to access are part of a headless service
 (https://kubevirt.io/user-guide/virtual_machines/dns/#dns-records).
+
+## Security considerations
+
+jumppod should be pretty safe to use:
+ * The sshd servers in the jumppod deployment run in unprivileged pods.
+ * The host-keys are provided via a secret and not regenerated to prevent MITM (so that you trust the host key signature and do not disable the checks).
 
 ## Deploy jumppod
 
