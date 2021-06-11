@@ -1,0 +1,90 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ansiblemachines
+spec:
+  selector:
+    subdomain: ansiblemachines
+  clusterIP: None
+  ports:
+  - name: foo # Actually, no port is needed.
+    port: 1234
+    targetPort: 1234
+---      
+apiVersion: kubevirt.io/v1
+kind: VirtualMachineInstance
+metadata:
+  labels:
+    subdomain: ansiblemachines
+  name: cirros0
+spec:
+  hostname: cirros0
+  subdomain: ansiblemachines
+  domain:
+    devices:
+      disks:
+      - disk:
+          bus: virtio
+        name: containerdisk
+      - disk:
+          bus: virtio
+        name: cloudinitdisk
+      - disk:
+          bus: virtio
+        name: emptydisk
+    resources:
+      requests:
+        memory: 128Mi
+  terminationGracePeriodSeconds: 0
+  volumes:
+  - containerDisk:
+      image: quay.io/kubevirt/cirros-container-disk-demo:latest
+    name: containerdisk
+  - cloudInitNoCloud:
+      userData: |
+        #!/bin/sh
+        echo 'printed from cloud-init userdata'
+    name: cloudinitdisk
+  - emptyDisk:
+      capacity: 2Gi
+    name: emptydisk
+---
+apiVersion: kubevirt.io/v1
+kind: VirtualMachineInstance
+metadata:
+  labels:
+    subdomain: ansiblemachines
+  name: cirros1
+spec:
+  hostname: cirros1
+  subdomain: ansiblemachines
+  domain:
+    devices:
+      disks:
+      - disk:
+          bus: virtio
+        name: containerdisk
+      - disk:
+          bus: virtio
+        name: cloudinitdisk
+      - disk:
+          bus: virtio
+        name: emptydisk
+    resources:
+      requests:
+        memory: 128Mi
+  terminationGracePeriodSeconds: 0
+  volumes:
+  - containerDisk:
+      image: quay.io/kubevirt/cirros-container-disk-demo:latest
+    name: containerdisk
+  - cloudInitNoCloud:
+      userData: |
+        #!/bin/sh
+        echo 'printed from cloud-init userdata'
+    name: cloudinitdisk
+  - emptyDisk:
+      capacity: 2Gi
+    name: emptydisk
+

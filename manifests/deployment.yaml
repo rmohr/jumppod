@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sshd
+  labels:
+    app: sshd
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: sshd
+  template:
+    metadata:
+      labels:
+        app: sshd
+    spec:
+      securityContext:
+        runAsUser: 6372
+      containers:
+      - name: sshd
+        image: quay.io/rmohr/sshd:latest
+        ports:
+        - containerPort: 2222
+        volumeMounts:
+          - name: authorized-keys-configmap
+            mountPath: "/home/nonroot/authorized_keys_configmap"
+        command: ["/home/nonroot/entrypoint.sh"]
+      volumes:
+        - name: authorized-keys-configmap
+          configMap:
+            optional: true
+            name: authorized-keys
+            items:
+            - key: "authorized_keys"
+              path: "authorized_keys"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sshd
+spec:
+  selector:
+    app: sshd
+  ports:
+    - protocol: TCP
+      port: 22
+      targetPort: 2222
