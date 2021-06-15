@@ -32,7 +32,7 @@ jumppod should be pretty safe to use:
 mkdir -p ~/etc/ssh && ssh-keygen -A -f ~/
 kubectl create secret generic host-keys --from-file=${HOME}/etc/ssh
 rm -rf ~/etc/ssh
-kubectl create -f manifests/deployment.yaml
+kubectl create -f https://raw.githubusercontent.com/rmohr/jumppod/main/manifests/deployment.yaml
 ```
 
 ### Manage access
@@ -45,6 +45,24 @@ file into the required configmap:
 
 ```bash
 kubectl create configmap authorized-keys --from-file=${HOME}/.ssh/id_rsa.pub
+```
+
+### Exposing the service via a NodePort
+
+Create a nodeport service which will expose sshd on port
+`32222`:
+
+```bash
+kubectl create service nodeport sshd-nodeport --node-port 32222 --tcp 2222:2222
+```
+
+Define an entry like this in `.ssh/config`
+
+```
+Host jumphost
+   HostName <node-ip>
+   User nonroot
+   Port 32222
 ```
 
 ### Exposing the service via kubectl port-forward
@@ -68,26 +86,6 @@ Host jumphost
    HostName localhost
    User nonroot
    Port 2222
-```
-
-### Exposing the service via a NodePort
-
-Create the pre-defined nodeport service which will expose sshd on port
-`32222`:
-
-
-```bash
-kubectl create -f manifests/nodeport-service.yaml
-```
-
-Define an entry like this in `.ssh/config`
-
-
-```
-Host jumphost
-   HostName <node-ip>
-   User nonroot
-   Port 32222
 ```
 
 ### Define a headless service to assign nice uniqe DNS names to every VMI in a cluster
