@@ -44,7 +44,7 @@ It is easy to transform an existing `authorized_keys` file or your `id_rsa.pub`
 file into the required configmap:
 
 ```bash
-kubectl create configmap authorized-keys --from-file=${HOME}/.ssh/id_rsa.pub
+kubectl create configmap authorized-keys --from-file=authorized_keys=${HOME}/.ssh/id_rsa.pub
 ```
 
 ### Exposing the service via a NodePort
